@@ -27,14 +27,14 @@ public class StockController {
     RestTemplate restTemplate;
 
     @RequestMapping(value ="/getStock/{user}",method = RequestMethod.GET,consumes = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> getStock(@PathVariable("user") final String user){
+    public List<StockValue> getStock(@PathVariable("user") final String user){
         HashMap<Class,ParameterizedTypeReference> paramTypeRefMap = new HashMap() ;
 
         paramTypeRefMap.put(UserStock.class, new ParameterizedTypeReference<List<UserStock>>(){} );
         ParameterizedTypeReference parameterizedTypeReference = paramTypeRefMap.get(UserStock.class);
         ResponseEntity<List<UserStock>> userStocks = restTemplate.exchange("http://MONGO-SERVICE/userService/getUserStock/" + user, HttpMethod.GET, null, parameterizedTypeReference);
 
-    List<String> stocs =  userStocks.getBody()
+    List<StockValue> stocs =  userStocks.getBody()
                 .stream()
                 .map(this::getStock)
                 .collect(Collectors.toList());
@@ -49,9 +49,9 @@ public class StockController {
         return true;
     }
 
-    private String getStock(UserStock userStock){
+    private StockValue getStock(UserStock userStock){
 
-            return userStock.getStock();
+            return new StockValue(userStock.getStock());
 
     }
 
